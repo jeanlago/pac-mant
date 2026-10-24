@@ -1,0 +1,60 @@
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1000 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1000,53310,10,4,30812,0.5375,10.145,0,0,17.66,81.83
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1001 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1001,36350,6,4,19779,0.5161,3.039,0,0,10.53,79.84
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1002 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1002,12530,1,4,5608,0.4894,3.165,0,0,2.87,74.98
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1003 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1003,17660,2,4,7256,0.4500,2.473,0,0,3.47,75.64
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1004 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1004,16220,2,4,7335,0.4722,2.789,0,0,3.62,71.11
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1005 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1005,47530,9,4,28037,0.5096,3.426,0,0,14.72,79.90
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1006 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1006,20080,2,4,7688,0.4578,2.672,0,0,3.68,75.79
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1007 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1007,37560,6,4,20705,0.4989,2.850,0,0,10.70,80.81
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1008 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1008,46660,8,4,26700,0.4556,4.322,0,0,12.53,80.60
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1009 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1009,75480,15,3,48000,0.4411,3.721,0,0,21.73,83.16
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1010 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1010,48390,9,4,28893,0.4806,4.174,0,0,14.26,81.94
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1011 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1011,22150,3,4,10621,0.3905,2.332,0,0,4.32,73.69
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1012 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1012,36260,5,4,16263,0.4080,2.557,0,0,6.87,78.72
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1013 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1013,50410,8,4,25525,0.5001,2.935,0,0,13.10,79.10
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1014 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1014,30640,4,4,14428,0.4726,2.265,0,0,7.03,78.72
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1015 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1015,18340,2,4,7582,0.4870,2.685,0,0,3.83,71.11
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1016 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1016,14780,2,4,6814,0.4066,2.078,0,0,2.89,73.92
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1017 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1017,30080,5,4,16396,0.4641,2.978,0,0,7.84,77.68
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1018 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1018,52340,10,4,30545,0.5155,3.285,0,0,16.13,80.57
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1019 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1019,33420,5,4,17249,0.5057,16.235,0,0,9.15,78.44
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1020 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1020,50070,9,4,27973,0.4744,4.674,0,0,13.63,81.59
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1021 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1021,20770,3,4,9643,0.4734,2.784,0,0,4.71,78.04
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1022 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1022,49670,9,4,27577,0.5060,4.028,0,0,14.30,79.55
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1023 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1023,34370,5,4,15177,0.5060,5.387,0,0,7.90,77.80
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1024 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1024,36930,6,4,19377,0.4638,2.839,0,0,9.24,78.45
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1025 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1025,49870,10,4,32478,0.4924,3.434,0,0,16.38,83.12
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1026 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1026,31620,5,4,17083,0.4631,3.415,0,0,8.15,77.18
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1027 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1027,38690,6,4,20208,0.4654,2.690,0,0,9.66,79.71
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1028 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1028,36910,6,4,20049,0.4819,2.968,0,0,9.92,80.04
+[PacManSimulator] RUNNING: -lc -1 -pp true -s 1029 -tp 1.0 -gc 4 -p false -r false -tt 40 -2x true -v false
+PacmAnt-evoluido,Legacy,1029,39230,6,4,20094,0.4752,3.132,0,0,9.82,80.65
