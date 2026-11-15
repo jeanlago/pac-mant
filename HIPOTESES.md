@@ -183,3 +183,41 @@ caminho da coletora). O termo das pílulas não muda. Sem a flag, o código fica
   ganho do laço τᵉ → Qᶜ → τᶜ → Qᵉ → τᵉ por tick dá, no pior caso,
   αᵉ·ω·100 × αᶜ·χ ≈ 7,9 × 0,115 ≈ 0,9, abaixo de 1 mas perto. A expectativa é que não haja
   divergência; o traço dirá.
+
+## Teste de replicação — preset manual (registrado antes de rodar)
+
+O artigo reporta, na Tabela III, **36.031 ± 11.819** pontos contra `Legacy` para o pac-mAnt com o
+preset **manual** (parâmetros ajustados à mão). Todas as rodadas anteriores usaram o preset evoluído.
+Este teste roda o preset manual para pôr o resultado ao lado desse número.
+
+- **Agente novo:** `PacmAnt-manual`, com os parâmetros de `ParametrosAnt.manual()`. Esse preset está
+  no código desde a Etapa 1 e nunca foi usado em nenhum jogo. Os valores são os da especificação do
+  trabalho (seção 1.10) e não são alterados:
+
+  | maxAnt | maxDist | Φ | d_min | μ | ρᶜ | ρᵉ | αᶜ | αᵉ | χ | ω | q0ᶜ | q0ᵉ |
+  |---|---|---|---|---|---|---|---|---|---|---|---|---|
+  | 15 | 100 | 70 | 35 | 50 | 0,5 | 0,5 | 0,5 | 0,5 | 0 | 0 | 0,7 | 0,95 |
+
+- **Configurações:**
+  1. `PacmAnt-manual`: configuração padrão do trabalho (reinício do feromônio a cada tick,
+     Decisões 3 e 9);
+  2. `PacmAnt-manual+alg1`: Algoritmo 1 fiel, com feromônio persistente (Decisão 15).
+- **Jogos:** 100 por configuração, sementes 2000–2099, contra `Legacy`. Essas sementes já foram
+  usadas na rodada confirmatória, com outras configurações. Nada é ajustado com base neste resultado:
+  a única mudança no código é dar um nome de agente ao preset manual.
+- **O que se reporta:** média ± DP, IC 95% da média (t de Student), mediana e vidas perdidas por fase.
+- **Comparação com o artigo:** só descritiva. Para cada configuração, a diferença absoluta e relativa
+  entre a média e 36.031, o DP ao lado de 11.819 e a posição de 36.031 em relação ao IC 95%.
+  **Não há teste de hipótese contra o artigo**, porque os jogos dele não estão disponíveis, e não há
+  critério de aprovação: o resultado é descrito como sair.
+- Não está previsto teste entre as duas configurações; elas são reportadas lado a lado.
+
+### Observações anotadas antes de rodar
+
+- Uma média próxima de 36.031 não prova replicação exata, e uma distante não aponta sozinha a causa.
+  O pac-mAnt foi implementado a partir da especificação, as Decisões 12 e 13 foram escolhidas olhando
+  jogos do preset evoluído, e o simulador e os fantasmas `Legacy` usados aqui podem não ser idênticos
+  aos do artigo.
+- A leitura que corresponde ao Algoritmo 1 do artigo é a `+alg1`; a configuração padrão (reinício
+  por tick) vem da especificação e foi a base das Etapas 1 e 2. Por isso as duas são rodadas.
+- No preset manual χ = 0 e ω = 0: as duas colônias não trocam feromônio.
