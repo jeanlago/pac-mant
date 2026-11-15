@@ -87,3 +87,99 @@ registro foi escrito antes de implementar a flag, de rodar os jogos e de ver qua
 realimentação: Qᶜ soma χ·τᵉ, o depósito das coletoras cresce com Qᶜ, Qᵉ soma ω·τᶜ, e o depósito
 das exploradoras cresce com Qᵉ. Sem reinício por tick, nada limita esse crescimento. Se for isso,
 o termo χ·Στᵉ deve dominar o termo das pílulas por ordens de grandeza.
+
+## Etapa 4 — calibração por ILS e termo colaborativo normalizado (registrada antes de implementar)
+
+Este registro foi escrito antes de implementar a flag `+norm`, o ILS e qualquer script da etapa, e
+antes de rodar qualquer jogo nas sementes 5000–5023 e 3000–3099.
+
+### Hipóteses
+
+- **H4:** o pac-mAnt fiel ao Algoritmo 1 (`+alg1`) com parâmetros recalibrados por ILS pontua mais
+  que com o preset evoluído do artigo, contra `Legacy`.
+- **H5:** A2 com termo colaborativo normalizado (média de τᵉ no caminho em vez da soma, flag
+  `+norm`), sobre `+alg1`, pontua pelo menos tanto quanto Fixo+alg1.
+
+### Flag `+norm`
+
+Na eq. 16, o termo colaborativo passa de χ·Σ τᵉ(arco) para χ·(Σ τᵉ(arco) / número de arcos do
+caminho da coletora). O termo das pílulas não muda. Sem a flag, o código fica como estava.
+
+### ILS (calibração)
+
+- **Base:** `PacmAnt-evoluido+alg1` (Fixo, sem A1/A2 e sem `+norm`), contra `Legacy`.
+- **Solução:** os 12 parâmetros do preset, exceto χ (fica 0). Cada parâmetro anda em uma grade
+  ancorada no valor do preset evoluído (valor = preset + k·passo), para que a solução inicial seja
+  exatamente o preset:
+
+  | Parâmetro | Preset | Passo | Limites da grade |
+  |---|---|---|---|
+  | maxAnt | 19 | 2 | 5 a 39 |
+  | maxDist | 100 | 10 | 20 a 150 |
+  | Φ | 79 | 10 | 9 a 149 |
+  | d_min | 13 | 2 | 3 a 41 |
+  | μ | 60 | 5 | 10 a 100 |
+  | ρᶜ | 0,22 | 0,05 | 0,02 a 0,97 |
+  | ρᵉ | 0,70 | 0,05 | 0,05 a 1,00 |
+  | αᶜ | 0,23 | 0,05 | 0,03 a 0,98 |
+  | αᵉ | 0,11 | 0,05 | 0,01 a 0,96 |
+  | ω | 0,72 | 0,05 | 0,02 a 0,97 |
+  | q0ᶜ | 0,37 | 0,05 | 0,02 a 0,97 |
+  | q0ᵉ | 0,69 | 0,05 | 0,04 a 0,99 |
+
+- **Solução inicial:** preset evoluído.
+- **Avaliação:** média da pontuação em 24 sementes **fixas** de treino (5000–5023) contra `Legacy`,
+  um processo por jogo, vários em paralelo. A semente do gerador do agente segue a regra de sempre
+  (7919·semente + 13).
+- **Busca local:** primeira melhora; vizinhança = ±1 passo em um parâmetro (até 24 vizinhos),
+  percorrida em ordem sorteada. Só melhora estrita conta.
+- **Perturbação:** 3 parâmetros distintos sorteados, cada um deslocado em 2 ou 3 passos, com sinal
+  sorteado. Se o deslocamento sair da grade, inverte-se o sinal; se ainda sair, fica no limite.
+- **Aceitação:** o ótimo local obtido depois da perturbação substitui a solução atual só se for
+  estritamente melhor; a melhor solução global é guardada.
+- **Orçamento:** 150 avaliações ou 3 horas, o que vier primeiro. As 3 horas são a soma das durações
+  das avaliações. A avaliação da solução inicial conta.
+- **Repetições:** uma solução já avaliada não é avaliada de novo (vale a média já gravada) e não
+  consome orçamento.
+- **Sorteios do ILS:** gerador próprio com semente fixa (4), para a execução poder ser retomada.
+- **Registro:** cada avaliação em `resultados/ils/avaliacoes.csv` (número, iteração, fase da busca,
+  os 12 parâmetros, média, DP, mediana, duração) e os jogos individuais em `resultados/ils/jogos.csv`.
+- **Preset do ILS:** a melhor solução global pela média de treino (em empate, a primeira encontrada).
+
+### Teste final (confirmatório)
+
+- **Sementes novas:** 3000–3099, 100 jogos por configuração, contra `Legacy`. **Nenhuma dessas
+  sementes é usada antes do teste final**, nem no ILS, nem em verificações.
+- **Configurações:**
+  1. Fixo+alg1 com o preset evoluído do artigo (`PacmAnt-evoluido+alg1`);
+  2. Fixo+alg1 com o preset do ILS (`PacmAnt-ils+alg1`);
+  3. A2+alg1+norm (`PacmAnt-A2+alg1+norm`), com o preset evoluído do artigo (não o do ILS).
+- **Análise:** Mann-Whitney bilateral sobre a pontuação, com correção de Holm em uma família de
+  2 pares: ILS × Fixo+alg1 e A2norm × Fixo+alg1. Reportam-se p bruto e p ajustado, média ± DP,
+  IC 95%, mediana e a probabilidade de um jogo de uma configuração superar um da outra. A referência
+  é 5% no p ajustado. Vidas perdidas por fase entra como métrica secundária, com o mesmo procedimento.
+- **Leitura de H4:** confirmada se o preset do ILS pontuar mais que o do artigo com p ajustado < 0,05.
+- **Leitura de H5:** refutada se A2+alg1+norm pontuar menos que Fixo+alg1 com p ajustado < 0,05.
+  Se não houver diferença significativa, H5 fica como "não refutada"; isso não prova equivalência,
+  e o tamanho do efeito é reportado junto.
+- Nenhum parâmetro, flag ou regra é alterado depois de visto qualquer resultado das sementes 3000–3099.
+
+### Verificações permitidas antes do teste final
+
+- Testes de funcionamento do código (compila, roda, grava CSV) em sementes já usadas (1000–1004).
+- Um traço por jogada de `PacmAnt-A2+alg1+norm` nas sementes 2000–2004, só para ver se o feromônio
+  continua limitado com a normalização. O que aparecer é reportado; a definição do `+norm` não muda
+  por causa disso.
+
+### Observações anotadas antes de rodar
+
+- Com DP de cerca de 17,5 mil pontos por jogo em Fixo+alg1 (seção 4.5 de `DECISOES.md`), a média de
+  24 jogos tem erro padrão de cerca de 3,6 mil pontos. O ILS não distingue melhoras reais menores
+  que isso de ruído, e a busca de primeira melhora tende a aceitar parte do ruído. A média de treino
+  da melhor solução deve sair otimista; o que vale para H4 é o teste nas sementes 3000–3099.
+- Os jogos com feromônio persistente não são reproduzíveis bit a bit, então a mesma solução
+  avaliada duas vezes pode dar médias diferentes. Por isso vale a primeira avaliação gravada.
+- Em A2+alg1+norm, χ ≤ 0,5 e o termo colaborativo passa a ser uma média. Uma conta aproximada do
+  ganho do laço τᵉ → Qᶜ → τᶜ → Qᵉ → τᵉ por tick dá, no pior caso,
+  αᵉ·ω·100 × αᶜ·χ ≈ 7,9 × 0,115 ≈ 0,9, abaixo de 1 mas perto. A expectativa é que não haja
+  divergência; o traço dirá.
