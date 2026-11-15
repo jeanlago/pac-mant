@@ -1,0 +1,3 @@
+etapa,agente,fantasma,jogos,media,dp,ic95,mediana,min,max,fase_media,vidas_perdidas,vidas_por_fase,ticks,ms_medio_tick,ms_max_tick,estouros_40ms,erros,seg_por_jogo,pct_fuga
+replicacao_manual,PacmAnt-manual+alg1,Legacy,100,50316.0000,15672.6372,3109.7912,52060.0000,3070,75880,9.9000,3.7400,0.4454,31558.9500,0.4740,18.2010,0,0,15.3680,83.5650
+replicacao_manual,PacmAnt-manual,Legacy,100,31597.8000,13906.7027,2759.3915,30915.0000,9290,71620,5.4100,3.9700,0.7609,17887.4600,0.2953,6.3600,0,0,5.5697,84.2178

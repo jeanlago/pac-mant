@@ -18,7 +18,7 @@ public final class Agentes {
 
 	public static final String[] PACMAN = {
 		"Random", "RandomNonRev", "NearestPill",
-		"PacmAnt-evoluido", "PacmAnt-A1", "PacmAnt-A2",
+		"PacmAnt-evoluido", "PacmAnt-A1", "PacmAnt-A2", "PacmAnt-manual",
 	};
 
 	public static final String[] FANTASMAS = {
@@ -63,6 +63,9 @@ public final class Agentes {
 		switch (partes[0]) {
 			case "PacmAnt-evoluido":
 				ant = new PacmAnt(ParametrosAnt.evoluido(), semente);
+				break;
+			case "PacmAnt-manual":   // preset ajustado à mão (Tabela III do artigo); teste de replicação
+				ant = new PacmAnt(ParametrosAnt.manual(), semente);
 				break;
 			case "PacmAnt-A1":
 				ant = new PacmAntAdaptive(ParametrosAnt.evoluido(), semente, PacmAntAdaptive.Variante.A1);
