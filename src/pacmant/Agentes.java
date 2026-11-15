@@ -30,6 +30,13 @@ public final class Agentes {
 	 * @param semente  semente do gerador aleatório próprio do agente (derivada da semente do jogo)
 	 */
 	public static IPacManController pacman(String nome, long semente) {
+		return pacman(nome, semente, null);
+	}
+
+	/**
+	 * @param parametros  lista "nome=valor,..." que troca parâmetros do preset (só para o pac-mAnt); pode ser null
+	 */
+	public static IPacManController pacman(String nome, long semente, String parametros) {
 		// Variantes de teste, por sufixo (ex.: PacmAnt-evoluido+acs+persist):
 		//   +acs      regra de transição do ACS clássico (q <= q0 aproveita)   [seção 1.3]
 		//   +persist  feromônio persistente dentro da vida/fase                 [DECISÃO 3]
@@ -38,8 +45,9 @@ public final class Agentes {
 		//   +chi05    chi fixo = 0,5 (teste post hoc; não vale para A2, que adapta chi)
 		//   +alg1     Algoritmo 1 fiel: uma construção e um depósito por tick,
 		//             com feromônio persistente                                [DECISÃO 15]
+		//   +norm     termo colaborativo da eq. 16 como média de tauE no caminho [DECISÃO 16]
 		String[] partes = nome.split("[+]");
-		boolean acs = false, persist = false, trilha = true, alg1 = false, chi05 = false;
+		boolean acs = false, persist = false, trilha = true, alg1 = false, chi05 = false, norm = false;
 		int margem = game.core.Game.EAT_DISTANCE;
 		for (int i = 1; i < partes.length; i++) {
 			if (partes[i].equals("acs")) acs = true;
@@ -47,6 +55,7 @@ public final class Agentes {
 			else if (partes[i].equals("minimo")) trilha = false;
 			else if (partes[i].equals("alg1")) alg1 = true;
 			else if (partes[i].equals("chi05")) chi05 = true;
+			else if (partes[i].equals("norm")) norm = true;
 			else if (partes[i].startsWith("margem")) margem = Integer.parseInt(partes[i].substring(6));
 			else throw new IllegalArgumentException("sufixo desconhecido: " + partes[i]);
 		}
@@ -65,9 +74,12 @@ public final class Agentes {
 				break;
 		}
 		if (ant != null && chi05) ant.comChi(0.5);
+		if (ant != null && parametros != null) ant.comParametros(parametros);
 		if (ant != null)
 			return ant.comRegraAcsClassica(acs).comFeromonioPersistente(persist)
-				.comDistanciaPelaTrilha(trilha).comMargemCaptura(margem).comAlgoritmo1(alg1);
+				.comDistanciaPelaTrilha(trilha).comMargemCaptura(margem).comAlgoritmo1(alg1)
+				.comChiNormalizado(norm);
+		if (parametros != null) throw new IllegalArgumentException("--params so vale para o pac-mAnt");
 		switch (nome) {
 			case "Random":
 				return new RandomPacMan();

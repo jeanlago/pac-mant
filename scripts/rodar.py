@@ -4,6 +4,7 @@ Exemplos (na raiz do projeto):
     python scripts/rodar.py --etapa 1
     python scripts/rodar.py --etapa 2 --paralelo 4
     python scripts/rodar.py --etapa confirmatoria
+    python scripts/rodar.py --etapa 4        (teste final da Etapa 4; exige resultados/ils/melhor.json)
     python scripts/rodar.py --agentes PacmAnt-evoluido --fantasmas Legacy --sementes 1000-1009 --saida resultados/teste
 
 Cada par grava resultados/<pasta>/<agente>__<fantasma>.csv (uma linha por jogo) e um .log.
@@ -11,6 +12,7 @@ Se o CSV já existir, as sementes já gravadas são puladas, então é seguro re
 """
 import argparse
 import glob
+import json
 import os
 import subprocess
 import sys
@@ -39,6 +41,22 @@ ETAPAS = {
 }
 SEMENTES_CONFIRMATORIA = "2000-2099"
 
+# Etapa 4, teste final: sementes novas (3000-3099), que não entram em nenhuma rodada anterior nem no ILS.
+# O preset do ILS é lido de resultados/ils/melhor.json (gravado por scripts/ils.py) e roda com o
+# rótulo PacmAnt-ils+alg1.
+ETAPAS["4"] = ["PacmAnt-evoluido+alg1", "PacmAnt-ils+alg1", "PacmAnt-A2+alg1+norm"]
+SEMENTES_ETAPA4 = "3000-3099"
+ROTULO_ILS = "PacmAnt-ils+alg1"
+BASE_ILS = "PacmAnt-evoluido+alg1"
+
+
+def params_ils():
+    arq = os.path.join(RAIZ, "resultados", "ils", "melhor.json")
+    if not os.path.exists(arq):
+        sys.exit("falta resultados/ils/melhor.json: rode scripts/ils.py antes do teste final")
+    with open(arq, encoding="utf-8") as f:
+        return json.load(f)["params"]
+
 
 def achar_java():
     candidatos = sorted(glob.glob(os.path.join(RAIZ, "tools", "jdk-*", "bin", "java*")))
@@ -63,7 +81,7 @@ def main():
     if not agentes:
         ap.error("informe --etapa ou --agentes")
     if args.sementes is None:
-        args.sementes = SEMENTES_CONFIRMATORIA if args.etapa == "confirmatoria" else SEMENTES
+        args.sementes = {"confirmatoria": SEMENTES_CONFIRMATORIA, "4": SEMENTES_ETAPA4}.get(args.etapa, SEMENTES)
     nome_pasta = "confirmatoria" if args.etapa == "confirmatoria" else "etapa" + (args.etapa or "X")
     pasta = args.saida or os.path.join("resultados", nome_pasta)
     pasta = os.path.join(RAIZ, pasta) if not os.path.isabs(pasta) else pasta
@@ -81,6 +99,9 @@ def main():
         cmd = [java, "-Xms256m", "-Xmx512m", "-cp", os.path.join(RAIZ, "build"), "pacmant.Experimento",
                "--agente", a, "--fantasma", f, "--sementes", args.sementes,
                "--saida", base + ".csv", "--think", str(args.think)]
+        if a == ROTULO_ILS:   # mesmo agente do Fixo+alg1, com os parâmetros achados pelo ILS
+            cmd[cmd.index("--agente") + 1] = BASE_ILS
+            cmd += ["--rotulo", ROTULO_ILS, "--params", params_ils()]
         p = subprocess.Popen(cmd, cwd=RAIZ, stdout=log, stderr=subprocess.STDOUT)
         print(f"[{time.time() - inicio:7.0f}s] iniciou  {a} x {f}", flush=True)
         return (p, a, f, log)

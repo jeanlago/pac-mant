@@ -48,6 +48,12 @@ public class PacmAnt extends PacManControllerBase {
 	 */
 	protected boolean algoritmo1 = false;
 
+	/**
+	 * DECISÃO 16: false (padrão) = termo colaborativo da eq. 16 como soma, chi * Σ tauE;
+	 * true = normalizado pelo tamanho do caminho, chi * (Σ tauE / número de arcos).
+	 */
+	protected boolean chiNormalizado = false;
+
 	// --- grafo e feromônio (um valor por arco dirigido: nó*4 + direção) ---
 	private int numNos = -1;
 	private int nivelAtual = -1;
@@ -110,6 +116,18 @@ public class PacmAnt extends PacManControllerBase {
 	public PacmAnt comAlgoritmo1(boolean v) {
 		this.algoritmo1 = v;
 		if (v) this.persistirFeromonio = true;
+		return this;
+	}
+
+	/** Termo colaborativo da eq. 16 como média de tauE no caminho da coletora, em vez da soma. */
+	public PacmAnt comChiNormalizado(boolean v) {
+		this.chiNormalizado = v;
+		return this;
+	}
+
+	/** Troca os parâmetros indicados em uma lista "nome=valor,nome=valor" (usado na calibração). */
+	public PacmAnt comParametros(String lista) {
+		this.par.aplicar(lista);
 		return this;
 	}
 
@@ -266,7 +284,9 @@ public class PacmAnt extends PacManControllerBase {
 			maxC = maximo(tauC);
 			traco.println(String.format(Locale.ROOT, "%d,%d,%s,%.4f,%.6g,%.6g,%.6g,%.6g,%d,%.6g,%.6g",
 				game.getTotalTime(), game.getCurLevel(), fuga ? "fuga" : "coleta", chi,
-				melhorTermoPilulas, melhorSomaTauE, chi * melhorSomaTauE, melhorQC, tamMelhorC, maxE, maxC));
+				melhorTermoPilulas, melhorSomaTauE,
+				chi * (chiNormalizado ? melhorSomaTauE / Math.max(1, tamMelhorC) : melhorSomaTauE),
+				melhorQC, tamMelhorC, maxE, maxC));
 		}
 		ticksTotal++;
 		if (fuga) ticksFuga++;
@@ -480,7 +500,9 @@ public class PacmAnt extends PacManControllerBase {
 			caminhoArcos[tamCaminho++] = arco;
 			// eq. 16, com +1 no denominador (DECISÃO 4)
 			int dPac = distanciaPelaTrilha ? tamCaminho : game.getPathDistance(posPac, prox);
-			qualidade += etaC(game, prox) / (dPac + 1.0) + chi * tauE[arco];
+			// DECISÃO 16 (+norm): o termo colaborativo entra ao fim da construção, como média
+			if (chiNormalizado) qualidade += etaC(game, prox) / (dPac + 1.0);
+			else qualidade += etaC(game, prox) / (dPac + 1.0) + chi * tauE[arco];
 			// os dois termos em separado, só para o traço (a soma acima fica como estava)
 			termoPilulas += etaC(game, prox) / (dPac + 1.0);
 			somaTauE += tauE[arco];
@@ -489,6 +511,7 @@ public class PacmAnt extends PacManControllerBase {
 			dir = escolher(game, atual, tauC, true, par.q0C);
 			if (dir == -1) break;   // laço: todos os vizinhos já visitados
 		}
+		if (chiNormalizado) qualidade += chi * (somaTauE / tamCaminho);
 	}
 
 	/** @return true se a exploradora terminou viva. */

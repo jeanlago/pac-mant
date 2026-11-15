@@ -1,14 +1,19 @@
 """Resume os traços por jogada do teste post hoc de chi (eq. 16 na melhor coletora).
 
 Uso (na raiz do projeto):
-    .venv/Scripts/python scripts/resumo_traco.py
+    .venv/Scripts/python scripts/resumo_traco.py [pasta]
 
-Lê resultados/posthoc_chi/traco_<agente>_<semente>.csv (uma linha por tick) e os CSVs de jogos da
+Sem argumento, a pasta é resultados/posthoc_chi; para o traço do +norm (Etapa 4), use
+resultados/etapa4_traco. Nos traços com +norm, a coluna termo_chi (χ·Στᵉ nas tabelas) já é o termo
+normalizado, χ·(Στᵉ / número de arcos).
+
+Lê <pasta>/traco_<agente>_<semente>.csv (uma linha por tick) e os CSVs de jogos da
 mesma pasta, e grava resumo_traco.csv e resumo_traco.md com uma linha por jogo e uma por agente.
 """
 import glob
 import os
 import re
+import sys
 
 import numpy as np
 import pandas as pd
@@ -52,6 +57,9 @@ def primeiro_tick(t, coluna, limite):
 
 
 def main():
+    global PASTA
+    if len(sys.argv) > 1:
+        PASTA = sys.argv[1] if os.path.isabs(sys.argv[1]) else os.path.join(RAIZ, sys.argv[1])
     pontos = {}
     for arq in glob.glob(os.path.join(PASTA, "*__*.csv")):
         for r in pd.read_csv(arq).itertuples():
@@ -105,7 +113,7 @@ def main():
                     f"{num(r.termo_chi_medio)} | {num(r.termo_chi_mediana)} | {num(r.soma_tau_e_mediana)} | "
                     f"{100 * r.frac_ticks_chi_domina:.1f} | "
                     f"{num(r.tau_e_max_jogo)} | {num(r.tau_c_max_jogo)} | {r.ticks_nao_finitos} | {passa} |\n")
-        f.write("\nPor agente (5 jogos):\n\n")
+        f.write("\nPor agente:\n\n")
         f.write("| Agente | Pontuação média | Pílulas (média) | χ·Στᵉ (mediana dos jogos) | "
                 "τᵉ máx. (maior dos jogos) | τᶜ máx. (maior dos jogos) | Ticks não finitos (%) |\n")
         f.write("|---|---|---|---|---|---|---|\n")

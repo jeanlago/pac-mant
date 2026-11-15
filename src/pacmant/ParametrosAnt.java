@@ -52,6 +52,40 @@ public final class ParametrosAnt implements Cloneable {
 		return p;
 	}
 
+	/** Troca os parâmetros de uma lista "nome=valor,nome=valor"; os que não aparecem ficam como estão. */
+	public void aplicar(String lista) {
+		if (lista == null || lista.trim().isEmpty()) return;
+		for (String item : lista.split(",")) {
+			String[] kv = item.trim().split("=");
+			if (kv.length != 2) throw new IllegalArgumentException("parametro mal formado: " + item);
+			String k = kv[0].trim();
+			double v = Double.parseDouble(kv[1].trim());
+			switch (k) {
+				case "maxAnt": maxAnt = (int) Math.round(v); break;
+				case "maxDist": maxDist = (int) Math.round(v); break;
+				case "phi": phi = v; break;
+				case "dMin": dMin = v; break;
+				case "mu": mu = v; break;
+				case "rhoC": rhoC = v; break;
+				case "rhoE": rhoE = v; break;
+				case "alphaC": alphaC = v; break;
+				case "alphaE": alphaE = v; break;
+				case "omega": omega = v; break;
+				case "q0C": q0C = v; break;
+				case "q0E": q0E = v; break;
+				case "chi": chi = v; break;
+				default: throw new IllegalArgumentException("parametro desconhecido: " + k);
+			}
+		}
+	}
+
+	@Override
+	public String toString() {
+		return String.format(java.util.Locale.ROOT,
+			"maxAnt=%d,maxDist=%d,phi=%s,dMin=%s,mu=%s,rhoC=%s,rhoE=%s,alphaC=%s,alphaE=%s,omega=%s,q0C=%s,q0E=%s,chi=%s",
+			maxAnt, maxDist, phi, dMin, mu, rhoC, rhoE, alphaC, alphaE, omega, q0C, q0E, chi);
+	}
+
 	@Override
 	public ParametrosAnt clone() {
 		try {

@@ -1,0 +1,11 @@
+{
+  "params": "maxAnt=19,maxDist=90,phi=69,dMin=17,mu=50,rhoC=0.22,rhoE=0.70,alphaC=0.28,alphaE=0.11,omega=0.92,q0C=0.37,q0E=0.74",
+  "media_treino": 63455.416666666664,
+  "avaliacao": 102,
+  "agente_base": "PacmAnt-evoluido+alg1",
+  "fantasma": "Legacy",
+  "sementes_treino": "5000-5023",
+  "avaliacoes": 137,
+  "segundos": 10820.4,
+  "parada": "orcamento esgotado (10820s)"
+}

@@ -1,0 +1,6 @@
+agente,fantasma,semente,pontuacao,fase,vidas_perdidas,ticks,ms_medio,ms_max,estouros,erros,segundos,pct_fuga
+PacmAnt-A2+alg1+norm,Legacy,2000,8090,0,3,1842,0.6540,55.411,1,0,1.59,68.68
+PacmAnt-A2+alg1+norm,Legacy,2001,19090,2,4,8569,0.5995,55.221,3,0,5.28,79.33
+PacmAnt-A2+alg1+norm,Legacy,2002,15980,3,4,9458,0.5775,50.039,1,0,5.62,80.71
+PacmAnt-A2+alg1+norm,Legacy,2003,5620,0,3,2630,0.5123,55.439,2,0,1.42,70.64
+PacmAnt-A2+alg1+norm,Legacy,2004,1550,0,3,1232,0.4199,54.370,1,0,0.58,59.14

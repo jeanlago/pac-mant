@@ -3,9 +3,10 @@
 Uso (na raiz do projeto):
     .venv/Scripts/python scripts/analise.py
 
-Duas rodadas, analisadas em separado:
-    exploratória   lê resultados/etapa*/*.csv        e grava em resultados/analise/
+Três rodadas, analisadas em separado:
+    exploratória   lê resultados/etapa[0-2]/*.csv    e grava em resultados/analise/
     confirmatória  lê resultados/confirmatoria/*.csv e grava em resultados/analise_confirmatoria/
+    etapa 4        lê resultados/etapa4/*.csv        e grava em resultados/analise_etapa4/
 
 Em cada pasta de saída:
     todos_os_jogos.csv   todas as linhas juntas
@@ -46,6 +47,10 @@ CONFIRMATORIA = ["PacmAnt-evoluido", "PacmAnt-A1", "PacmAnt-A2",
 # Jogos esperados por configuração na pasta da rodada confirmatória. Configurações com menos
 # jogos (ainda rodando) ficam fora da análise, para não misturar dados parciais.
 JOGOS_CONFIRMATORIA = {"": 100, CHI05: 50}
+# Etapa 4, teste final (sementes 3000-3099): preset do ILS e A2 normalizado contra Fixo+alg1
+ETAPA4 = ["PacmAnt-evoluido+alg1", "PacmAnt-ils+alg1", "PacmAnt-A2+alg1+norm"]
+PARES_ETAPA4 = [("PacmAnt-ils+alg1", "PacmAnt-evoluido+alg1"),
+                ("PacmAnt-A2+alg1+norm", "PacmAnt-evoluido+alg1")]
 # Variantes de implementação comparadas com a configuração padrão (só pontuação)
 PADRAO = "PacmAnt-evoluido"
 ORDEM_VARIANTES = ["", "+acs", "+persist", "+acs+persist", "+minimo", "+margem0", "+minimo+margem0",
@@ -258,11 +263,13 @@ def analisar(nome, padrao_pasta, pasta_saida, familias, principais, variantes, j
 
 
 def main():
-    analisar("exploratória", "etapa*", "analise", [("reinicio", PARES)], PRINCIPAIS, variantes=True)
+    analisar("exploratória", "etapa[0-2]", "analise", [("reinicio", PARES)], PRINCIPAIS, variantes=True)
     analisar("confirmatória", "confirmatoria", "analise_confirmatoria",
              [("reinicio (primaria)", PARES), ("persist (secundaria)", PARES_PERSIST), ("alg1", PARES_ALG1),
               ("chi05 (post hoc, sementes 2000-2049)", PARES_CHI05, SEMENTES_CHI05)],
              CONFIRMATORIA, variantes=False, jogos_esperados=JOGOS_CONFIRMATORIA)
+    analisar("etapa 4 (teste final)", "etapa4", "analise_etapa4", [("etapa4", PARES_ETAPA4)],
+             ETAPA4, variantes=False, jogos_esperados={"": 100})
 
 
 if __name__ == "__main__":

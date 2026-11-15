@@ -1,0 +1,7 @@
+fantasma,familia,metrica,agente_a,agente_b,n_a,n_b,media_a,media_b,mediana_a,mediana_b,U,p_valor,prob_a_maior_b,p_holm,testes_na_familia
+Legacy,etapa4,pontuacao,PacmAnt-ils+alg1,PacmAnt-evoluido+alg1,100,100,53875.7,55012.9,54285,54910,4781,0.593422,0.4781,1,2
+Legacy,etapa4,pontuacao,PacmAnt-A2+alg1+norm,PacmAnt-evoluido+alg1,100,100,55221.4,55012.9,55390,54910,4994,0.989278,0.4994,1,2
+Legacy,etapa4,vidas_por_fase,PacmAnt-ils+alg1,PacmAnt-evoluido+alg1,100,100,0.485187,0.474092,0.363636,0.363636,5090,0.825836,0.509,1,2
+Legacy,etapa4,vidas_por_fase,PacmAnt-A2+alg1+norm,PacmAnt-evoluido+alg1,100,100,0.460251,0.474092,0.381818,0.363636,5059,0.885515,0.5059,1,2
+Legacy,etapa4,fase,PacmAnt-ils+alg1,PacmAnt-evoluido+alg1,100,100,9.22,9.35,10,10,4916.5,0.838026,0.49165,1,2
+Legacy,etapa4,fase,PacmAnt-A2+alg1+norm,PacmAnt-evoluido+alg1,100,100,9.28,9.35,9.5,10,4947,0.896962,0.4947,1,2

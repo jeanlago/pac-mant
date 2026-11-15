@@ -1,7 +1,7 @@
 # Decisões de implementação
 
 Registro das escolhas feitas onde o artigo (Recio et al., 2012) ou a especificação do trabalho
-deixam margem. As Decisões 1 a 8 vieram da especificação; as Decisões 9 a 15 foram tomadas durante a
+deixam margem. As Decisões 1 a 8 vieram da especificação; as Decisões 9 a 17 foram tomadas durante a
 implementação. Os resultados que justificam cada escolha estão na seção 4.
 
 > **Sobre a fonte.** O pac-mAnt foi implementado a partir da especificação do trabalho, sem o texto
@@ -22,6 +22,8 @@ implementação. Os resultados que justificam cada escolha estão na seção 4.
 - Etapa 0 (validação do simulador): rodada antes da redução de escopo, com 100 jogos (sementes 1000–1099)
   contra `Legacy` e `RandomGhosts`.
 - Etapa 3 (RHEA): **não implementada** (fora do escopo final).
+- Etapa 4: calibração do `+alg1` por ILS (**24 sementes de treino, 5000–5023**) e teste final com
+  **100 jogos, sementes 3000–3099, contra `Legacy`** (seções 4.7 a 4.9).
 
 ## 2. Decisões da especificação (1 a 8)
 
@@ -37,7 +39,7 @@ implementação. Os resultados que justificam cada escolha estão na seção 4.
 | 7 | Quantidade de formigas | maxAnt de cada tipo por tick, em rodízio entre os ninhos. |
 | 8 | Φ e μ | Φ é peso direto (79); μ é porcentagem de 0 a 100 (60). |
 
-## 3. Decisões tomadas na implementação (9 a 15)
+## 3. Decisões tomadas na implementação (9 a 17)
 
 ### Decisão 9 — iterações e atualização global dentro do tick
 Com reinício do feromônio a cada tick (Decisão 3) e um único lote de formigas, o feromônio seria
@@ -110,6 +112,39 @@ Diferença para `+persist`: `+persist` mantém as 5 a 10 iterações com depósi
 (Decisão 9); `+alg1` faz um depósito por tick. O restante (Decisões 10 a 14) é igual.
 A configuração padrão continua sendo a da Decisão 9 com reinício por tick, por ser a base em que
 as hipóteses da Etapa 2 foram registradas. Resultado na seção 4.5.
+
+### Decisão 16 — termo colaborativo normalizado (flag `+norm`)
+A seção 4.6 mostrou que, com feromônio persistente e χ > 0, o termo χ·Στᵉ da eq. 16 diverge. A flag
+`+norm` troca a soma pela média no caminho da coletora:
+
+    Qᶜ = Σ ηᶜ(nⱼ)/(δ(pacman, nⱼ) + 1) + χ · (Σ τᵉ(arco) / número de arcos do caminho)
+
+- O termo das pílulas não muda; só o termo colaborativo é dividido pelo tamanho do caminho.
+- A média é calculada quando a coletora termina, com o τᵉ lido arco a arco durante a construção
+  (os mesmos valores que entravam na soma).
+- Sem a flag o código faz a mesma conta de antes. Com χ = 0 a flag não tem efeito.
+- A eq. 19 (exploradoras, termo ω·Στᶜ) **não** foi normalizada: o pedido da Etapa 4 era só o termo
+  colaborativo das coletoras, e com χ = 0 esse lado nunca divergiu.
+
+### Decisão 17 — calibração por ILS
+O desenho (hipóteses, grade, vizinhança, perturbação, aceitação, orçamento, sementes) foi registrado
+em `HIPOTESES.md` antes de implementar. O que ficou a cargo da implementação:
+
+- **Passagem dos parâmetros:** o `Experimento` aceita `--params nome=valor,...`, que troca campos do
+  preset antes do jogo. Rodar o `PacmAnt-evoluido+alg1` com `--params` iguais ao preset dá os mesmos
+  jogos que sem a opção (conferido nas sementes 1000–1001).
+- **Um processo por jogo:** cada avaliação dispara 24 processos Java (um por semente), 8 de cada vez.
+- **Retomada:** os sorteios do ILS usam semente fixa e as avaliações gravadas não são refeitas, então
+  o script pode ser interrompido e continuar do mesmo ponto.
+- **Paralelismo:** a primeira avaliação (o preset, que também serviu para medir o tempo) rodou com
+  12 jogos em paralelo e teve 6 ticks acima de 40 ms, em 4 dos 24 jogos, por disputa de CPU. Nesses
+  ticks o simulador repete a jogada anterior. Uma medição em sementes antigas (1000–1023) deu
+  nenhum tick acima de 40 ms com 8 em paralelo, e o restante do ILS rodou com 8. A primeira
+  avaliação foi mantida como está, porque o registro diz que vale a primeira avaliação gravada.
+  Mesmo com 8 em paralelo houve ticks acima de 40 ms durante o ILS (seção 4.8).
+- **Preset do ILS no teste final:** lido de `resultados/ils/melhor.json` e passado com `--params`
+  ao mesmo agente `PacmAnt-evoluido+alg1`, com o rótulo `PacmAnt-ils+alg1`. O código compilado é o
+  mesmo para as três configurações do teste final.
 
 ## 4. Resultados
 
@@ -298,6 +333,9 @@ Mann-Whitney bilateral com Holm (2 pares):
 
 **Traços por jogada (5 jogos por configuração, sementes 2000–2004), na melhor coletora do tick:**
 
+> Nota acrescentada na Etapa 4: nos jogos rodados com `--traco` a Ms. Pac-Man joga com atraso em
+> longos trechos (ver seção 4.7). Os valores de feromônio abaixo foram medidos nesses jogos.
+
 | Agente | Termo das pílulas (média por jogada) | χ·Στᵉ (mediana por jogada) | τᵉ máximo no jogo | τᶜ máximo no jogo | Ticks com soma infinita |
 |---|---|---|---|---|---|
 | Fixo+persist (χ = 0) | 2,6 a 3,8 | 0 (Στᵉ mediana de 77 a 127) | 346 a 973 | 29 a 67 | 0% |
@@ -343,3 +381,122 @@ com χ > 0; a mediana é mais informativa porque a média é dominada pelos tick
   exploradoras. Não foi traçado um jogo de A2 sem `+persist` para confirmar.
 - Para χ ser um parâmetro utilizável com persistência, a eq. 16 precisaria de alguma normalização
   (por exemplo, média de τᵉ no caminho em vez de soma) ou de um teto para τ. Nenhuma das duas foi implementada.
+
+### 4.7 Etapa 4 — traço do `+norm` (verificação antes do teste final)
+
+Verificação prevista em `HIPOTESES.md`: 5 jogos de `PacmAnt-A2+alg1+norm` nas sementes 2000–2004,
+com traço por jogada. Arquivos: `resultados/etapa4_traco/` (`resumo_traco.md`, `resumo_traco.csv`).
+A definição do `+norm` não foi alterada depois de ver estes jogos.
+
+| Semente | Pontuação | Ticks | χ médio | Pílulas (mediana por jogada) | χ·média(τᵉ) (mediana por jogada) | % ticks com termo colaborativo > pílulas | τᵉ máximo no jogo | τᶜ máximo no jogo |
+|---|---|---|---|---|---|---|---|---|
+| 2000 | 8.090 | 1.842 | 0,34 | 1,45 | 0,49 | 29,1 | 100 | 11,3 |
+| 2001 | 19.090 | 8.566 | 0,38 | 1,09 | 0,24 | 18,9 | 111 | 16,8 |
+| 2002 | 15.980 | 9.457 | 0,38 | 1,06 | 0,36 | 22,4 | 107 | 17,6 |
+| 2003 | 5.620 | 2.629 | 0,34 | 1,28 | 0,45 | 37,4 | 114 | 16,6 |
+| 2004 | 1.550 | 1.231 | 0,29 | 0,99 | 0,42 | 29,6 | 72 | 9,5 |
+
+- **O feromônio fica limitado.** τᵉ não passa de 114 e τᶜ não passa de 18 em nenhum dos 5 jogos;
+  não houve valor infinito nem NaN. Sem a normalização, τᵉ passava de 1e6 poucos ticks depois de χ
+  ficar positivo (seção 4.6).
+- **Os dois termos da eq. 16 ficam na mesma ordem de grandeza.** O termo colaborativo é maior que o
+  das pílulas em 19% a 37% dos ticks.
+- **As pontuações destes 5 jogos são baixas (média 10.066) por causa do próprio traço, não do
+  `+norm`.** Isto foi apurado depois do teste final, quando A2+alg1+norm fez 55.221 de média sem
+  traço:
+  - Com `--traco`, cada jogo tem de 1 a 3 ticks de cerca de 50 ms, acima do limite de 40 ms.
+  - Depois de um tick assim, a thread de decisão do simulador fica dessincronizada, e o jogo
+    avança com a jogada anterior da Ms. Pac-Man por longos trechos. Em 2 jogos traçados
+    (sementes 2003–2004) o simulador avisou "PacMan is still thinking" 1.917 vezes em cerca de
+    13,8 mil ticks; sem traço, nenhuma vez.
+  - Os mesmos 5 jogos (sementes 2000–2004) **sem traço** deram 42.840, 80.280, 53.200, 18.670 e
+    78.480 (média 54.694), iguais em duas execuções.
+- **O que continua valendo:** os valores de feromônio do traço (τ limitado) foram medidos em jogos
+  com a Ms. Pac-Man atrasada, mas a conta do feromônio é a mesma. O teste final (seção 4.9), sem
+  traço, é coerente com isso: A2+alg1+norm não despenca como A2+persist despencou na seção 4.4.
+- **O mesmo defeito atinge os traços da seção 4.6** (os logs daqueles jogos têm de 219 a 2.155
+  avisos). As pontuações da seção 4.6 vêm de rodadas sem traço e não são afetadas; os valores de
+  feromônio de lá têm a mesma ressalva daqui. A opção `--traco` não foi corrigida.
+
+### 4.8 Etapa 4 — calibração por ILS (sementes de treino 5000–5023, contra Legacy)
+
+Desenho registrado em `HIPOTESES.md` antes de implementar; detalhes de implementação na Decisão 17.
+Arquivos: `resultados/ils/` (`avaliacoes.csv`, `jogos.csv`, `melhor.json`, `ils.log`).
+
+- **Parada:** pelo limite de 3 horas, com **137 avaliações** (3.288 jogos; mediana de 80 s por avaliação).
+- **Trajetória:**
+
+  | Iteração | Avaliações | Ponto de partida (média) | Ótimo local (média) | Resultado |
+  |---|---|---|---|---|
+  | 0 | 1 a 34 | preset: 50.742 | 59.682 | solução atual |
+  | 1 | 35 a 71 | perturbação: 47.983 | 59.010 | rejeitada |
+  | 2 | 72 a 125 | perturbação: 53.272 | 63.455 | aceita |
+  | 3 | 126 a 137 | perturbação: 52.310 | 56.859 (busca interrompida) | orçamento esgotado |
+
+- **Melhor solução (avaliação 102), usada como preset do ILS:**
+
+  | Parâmetro | Preset do artigo | Preset do ILS |
+  |---|---|---|
+  | maxAnt | 19 | 19 |
+  | maxDist | 100 | **90** |
+  | Φ | 79 | **69** |
+  | d_min | 13 | **17** |
+  | μ | 60 | **50** |
+  | ρᶜ | 0,22 | 0,22 |
+  | ρᵉ | 0,70 | 0,70 |
+  | αᶜ | 0,23 | **0,28** |
+  | αᵉ | 0,11 | 0,11 |
+  | ω | 0,72 | **0,92** |
+  | q0ᶜ | 0,37 | 0,37 |
+  | q0ᵉ | 0,69 | **0,74** |
+
+  Nas 24 sementes de treino: 63.455 ± 13.169 (mediana 65.565), contra 50.742 ± 18.409
+  (mediana 46.280) do preset do artigo.
+
+**Ressalvas sobre a busca.**
+- As 137 médias têm desvio padrão de 4.129 pontos, perto do erro padrão de uma média de 24 jogos
+  (cerca de 3,6 mil). 93 das outras 136 soluções ficaram acima do preset. A superfície vista pelo
+  ILS é quase toda ruído, e a melhor média é o máximo de 137 valores ruidosos.
+- **Ticks acima de 40 ms:** 91 em 96,2 milhões de ticks, em 86 dos 3.288 jogos (6 deles na primeira
+  avaliação, com 12 em paralelo). Como a seção 4.7 mostrou, um tick assim pode deixar a Ms. Pac-Man
+  jogando atrasada por um trecho. Os jogos com estouro pontuaram em média 1.252 pontos abaixo da
+  média da mesma semente nos jogos sem estouro (Mann-Whitney, p = 0,68). O ILS não gravou a saída
+  do simulador, então não dá para contar os ticks atrasados desses jogos.
+- A avaliação do preset (50.742) ficou abaixo do que o mesmo preset fez nas outras rodadas
+  (53.016 nas sementes 2000–2099 e 55.013 nas 3000–3099). Quatro dos seus 24 jogos tiveram estouro.
+
+### 4.9 Etapa 4 — teste final (100 jogos, sementes 3000–3099, contra Legacy)
+
+Registrado em `HIPOTESES.md` antes de implementar. As sementes 3000–3099 não foram usadas antes
+desta rodada. O código compilado é o mesmo para as três configurações e não foi alterado depois.
+Arquivos: `resultados/etapa4/` e `resultados/analise_etapa4/`. Nenhum jogo teve exceção, tick
+acima de 40 ms ou aviso do simulador.
+
+| Agente | Pontuação (média ± DP) | IC 95% | Mediana | Fase média | Vidas perdidas/fase | % fuga | ms/tick (médio / máx.) | s/jogo |
+|---|---|---|---|---|---|---|---|---|
+| Fixo+alg1 (preset do artigo) | 55.013 ± 18.563 | ± 3.683 | 54.910 | 9,35 | 0,47 | 81,0 | 0,53 / 8,3 | 16,5 |
+| Fixo+alg1 (preset do ILS) | 53.876 ± 18.287 | ± 3.629 | 54.285 | 9,22 | 0,49 | 83,8 | 0,52 / 6,2 | 16,0 |
+| A2+alg1+norm (preset do artigo) | 55.221 ± 18.175 | ± 3.606 | 55.390 | 9,28 | 0,46 | 83,1 | 0,53 / 8,3 | 16,3 |
+
+Mann-Whitney bilateral com Holm (2 pares), contra Fixo+alg1 com o preset do artigo:
+
+| Par | Diferença de médias (IC 95%) | Pontuação: p bruto / Holm | P(jogo de A > jogo do Fixo) | Vidas por fase: p bruto / Holm |
+|---|---|---|---|---|
+| ILS × Fixo+alg1 | −1.137 (−6.276 a +4.001) | 0,59 / 1,00 | 0,478 | 0,83 / 1,00 |
+| A2norm × Fixo+alg1 | +208 (−4.915 a +5.332) | 0,99 / 1,00 | 0,499 | 0,89 / 1,00 |
+
+**Leitura das hipóteses (`HIPOTESES.md`).**
+- **H4 não confirmada.** O preset do ILS não pontua mais que o do artigo: a média ficou 1.137 pontos
+  abaixo, sem diferença significativa (p ajustado 1,00). A vantagem de 12,7 mil pontos vista nas
+  sementes de treino não aparece em sementes novas; era ruído selecionado pela busca, como previsto
+  na observação anotada antes de rodar.
+- **H5 não refutada.** A2+alg1+norm pontua praticamente o mesmo que Fixo+alg1 (+208 pontos,
+  p ajustado 1,00). Isso não prova equivalência: o IC 95% da diferença vai de −4,9 mil a +5,3 mil
+  pontos. O que se pode dizer é que, com a normalização, χ > 0 deixou de derrubar a pontuação
+  (na seção 4.4, A2+persist caiu para 18.965), e também não trouxe ganho.
+
+**Limites.**
+- O ILS teve 137 avaliações de 24 jogos. Com esse ruído, o teste não diz que o preset do artigo é
+  ótimo; diz que esta busca, com este orçamento, não achou um preset melhor.
+- A1 (regra de fuga adaptativa) faz parte de A2, então a comparação A2norm × Fixo+alg1 mede A1 e
+  χ normalizado juntos.

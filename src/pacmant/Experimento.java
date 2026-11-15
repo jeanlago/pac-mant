@@ -24,6 +24,9 @@ import java.util.Set;
  * Uso:
  *   java -cp build pacmant.Experimento --agente NOME --fantasma NOME
  *        --sementes 1000-1099 --saida resultados/arquivo.csv [--think 40] [--rotulo NOME]
+ *        [--params maxAnt=19,rhoC=0.22,...] [--traco PASTA]
+ *
+ * --params troca parâmetros do preset do pac-mAnt (calibração por ILS); --rotulo dá o nome que vai no CSV.
  *
  * Se o CSV de saída já existir, as sementes já gravadas são puladas (permite retomar).
  * Um processo por par agente x fantasma: o simulador usa um gerador aleatório estático
@@ -35,7 +38,7 @@ public final class Experimento {
 		"agente,fantasma,semente,pontuacao,fase,vidas_perdidas,ticks,ms_medio,ms_max,estouros,erros,segundos,pct_fuga";
 
 	public static void main(String[] args) throws IOException {
-		String agente = null, fantasma = null, saida = null, rotulo = null, pastaTraco = null;
+		String agente = null, fantasma = null, saida = null, rotulo = null, pastaTraco = null, params = null;
 		int semIni = 1000, semFim = 1099, think = 40;
 
 		for (int i = 0; i < args.length; i++) {
@@ -45,6 +48,7 @@ public final class Experimento {
 			else if (a.equals("--saida")) saida = args[++i];
 			else if (a.equals("--rotulo")) rotulo = args[++i];
 			else if (a.equals("--traco")) pastaTraco = args[++i];
+			else if (a.equals("--params")) params = args[++i];
 			else if (a.equals("--think")) think = Integer.parseInt(args[++i]);
 			else if (a.equals("--sementes")) {
 				String[] p = args[++i].split("-");
@@ -72,7 +76,7 @@ public final class Experimento {
 			for (int semente = semIni; semente <= semFim; semente++) {
 				if (feitas.contains(semente)) continue;
 
-				Cronometrado pac = new Cronometrado(Agentes.pacman(agente, 7919L * semente + 13), think);
+				Cronometrado pac = new Cronometrado(Agentes.pacman(agente, 7919L * semente + 13, params), think);
 
 				SimulatorConfig config = new SimulatorConfig();
 				config.visualize = false;

@@ -1,0 +1,6 @@
+agente,semente,pontuacao,fase,ticks,ticks_nao_finitos,chi_medio,termo_pilulas_medio,termo_pilulas_mediana,soma_tau_e_media,soma_tau_e_mediana,termo_chi_medio,termo_chi_mediana,frac_ticks_chi_domina,tau_e_max_jogo,tau_c_max_jogo,tau_e_max_mediana,tick_tau_e_passa_1e6,tick_tau_e_passa_1e100
+PacmAnt-A2+alg1+norm,2000,8090,0,1842,0,0.335506,3.4469,1.44934,274.208,176.843,0.785498,0.490179,0.290988,100.268,11.3047,43.3822,,
+PacmAnt-A2+alg1+norm,2001,19090,2,8566,0,0.378033,2.74129,1.0854,183.142,94.5303,0.528771,0.242923,0.189237,111.065,16.7842,19.8503,,
+PacmAnt-A2+alg1+norm,2002,15980,3,9457,0,0.381899,2.45984,1.06291,229.127,113.903,0.709078,0.356823,0.223855,107.253,17.5816,28.3215,,
+PacmAnt-A2+alg1+norm,2003,5620,0,2629,0,0.341295,3.46164,1.2754,306.089,205.351,0.935052,0.450126,0.374287,113.636,16.5721,27.4979,,
+PacmAnt-A2+alg1+norm,2004,1550,0,1231,0,0.288898,3.16732,0.985103,368.688,178.343,0.976113,0.423655,0.295695,71.7259,9.46938,16.5356,,
