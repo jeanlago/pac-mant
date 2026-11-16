@@ -34,7 +34,7 @@ uma versão adaptativa (A1 e A2) e a calibração dos parâmetros por busca loca
 
 ## Como reproduzir (Windows)
 
-Clonar com o simulador: `git clone --recurse-submodules <url>` (ou `git submodule update --init` depois de clonar).
+Clonar com o simulador: `git clone --recurse-submodules https://github.com/jeanlago/pac-mant.git` (ou `git submodule update --init` depois de clonar).
 
 Requisitos: JDK 21 e Python 3 com `numpy`, `scipy`, `pandas` e `matplotlib`.
 Se existir um JDK em `tools/jdk-*`, os scripts o usam; senão, usam o `java`/`javac` do PATH.
